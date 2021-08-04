@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation("org.json:json:20210307")
 }
 
 tasks.withType<KotlinCompile>() {

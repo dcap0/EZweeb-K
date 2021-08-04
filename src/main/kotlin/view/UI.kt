@@ -11,11 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.imageFromResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import controller.Logic
 
-fun root() = Window(
-    title = "EZ-WEEB",
-    resizable = false
+fun root(logic: Logic) = Window(
+    title = "EZWEEB-K",
+    resizable = false,
+    size = IntSize(1000,600)
 ) {
     val stateVertical = rememberScrollState(0)
     Box(
