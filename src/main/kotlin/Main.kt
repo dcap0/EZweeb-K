@@ -1,6 +1,4 @@
 import controller.Logic
 import view.root
 
-fun main(){
-    root(Logic())
-}
+fun main()=root(Logic())
