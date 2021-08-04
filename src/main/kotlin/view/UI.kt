@@ -18,21 +18,25 @@ import controller.Logic
 fun root(logic: Logic) = Window(
     title = "EZWEEB-K",
     resizable = false,
-    size = IntSize(1000,600)
+    size = IntSize(800,600),
 ) {
     val stateVertical = rememberScrollState(0)
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(stateVertical)
-            .padding(8.dp)
-    ) {
-        Column {
-            AnimeRow()
-            AnimeRow()
-            AnimeRow()
-            AnimeRow()
-            AnimeRow()
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(stateVertical)
+        ) {
+            Column {
+                AnimeRow()
+                AnimeRow()
+                AnimeRow()
+                AnimeRow()
+                AnimeRow()
+            }
         }
     }
 }
