@@ -18,6 +18,7 @@ import java.util.logging.Logger
 class Logic{
     init{
         initializeData()
+        updateList()
     }
 
     fun updateList(){
