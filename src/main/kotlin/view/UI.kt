@@ -70,3 +70,26 @@ fun AnimeCard(){
         }
     }
 }
+
+//
+@Composable
+fun MagnetDropdown(mLinks: ArrayList<String>){
+    var expanded by remember {mutableStateOf(false)}
+    var selectedIndex by remember { mutableStateOf(0) }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = {expanded = false},
+        modifier = Modifier.fillMaxWidth()
+    ){
+        mLinks.forEachIndexed { index, value ->
+            DropdownMenuItem(
+                onClick = {
+                    selectedIndex = index
+                    expanded = false
+                },
+                content = {Text(mLinks[index])}
+            )
+        }
+    }
+}

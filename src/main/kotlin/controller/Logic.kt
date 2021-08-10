@@ -4,16 +4,13 @@ package controller
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import model.Series
 import org.json.JSONArray
 import org.json.JSONObject
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.io.File
 import java.io.FileWriter
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
-import java.util.logging.Logger
 
 class Logic{
     init{
@@ -22,22 +19,44 @@ class Logic{
     }
 
     fun updateList(){
-        val retVal = ArrayList<Series>()
-        val html = getHTML()
-        CoroutineScope(Dispatchers.Default).launch { println(html) }
+        val title = getSeriesData("link-title")
+        val preline = getSeriesData("preline")
+
+//        CoroutineScope(Dispatchers.Default).launch {
+//
+//            for(i in 0 until title.size){
+//                println("${title[i]}: ${preline[i]}\n")
+//            }
+//
+//        }
     }
 
-    private fun getHTML(): String{
-        val client = HttpClient.newHttpClient()
-        val request = HttpRequest.newBuilder().apply {
-            uri(URI.create("https://myanimelist.net/anime/season"))
-            GET()
-        }.build()
-
-        val res: HttpResponse<String> = client.send(request, HttpResponse.BodyHandlers.ofString())
-
-        return res.body()
+    private fun getMagnetLinks(title: String){
+        val retVal = ArrayList<URI>()
+        val queryTitle = title.replace(" ", "+") + "+horriblesubs"
+        val doc: Document = Jsoup.connect("https://nyaa.si/?f=0&c=0_0&q=$queryTitle").get()
     }
+
+
+    //TODO figure out images.
+//    private fun getSeriesImageLinks(): ArrayList<String>{
+//        val retVal = ArrayList<String>()
+//        val doc: Document = Jsoup.connect("https://myanimelist.net/anime/season").get()
+//        val elements = doc.getElementsByClass("image")
+//        elements.forEach { e ->
+//            retVal.add(e.children()[0].children()[0].attr("src"))
+//        }
+//        return retVal
+//    }
+
+    private fun getSeriesData(htmlClass: String): ArrayList<String>{
+        val retVal = ArrayList<String>()
+        val doc: Document = Jsoup.connect("https://myanimelist.net/anime/season").get()
+        val titles = doc.getElementsByClass(htmlClass)
+        titles.forEach { retVal.add(it.text()) }
+        return retVal
+    }
+
 
     private fun initializeData(): String {
         val retData = getPath()
