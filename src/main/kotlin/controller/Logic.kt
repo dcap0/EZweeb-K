@@ -4,36 +4,49 @@ package controller
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import model.Series
 import org.json.JSONArray
 import org.json.JSONObject
 import org.jsoup.Jsoup
+import org.jsoup.helper.HttpConnection
 import org.jsoup.nodes.Document
 import java.io.File
 import java.io.FileWriter
+import java.net.HttpURLConnection
 import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
 
 class Logic{
+
+    val series: ArrayList<Series>
+
     init{
         initializeData()
-        updateList()
+        series = updateList()
     }
 
-    fun updateList(){
-        val title = getSeriesData("link-title")
-        val preline = getSeriesData("preline")
 
-//        CoroutineScope(Dispatchers.Default).launch {
-//
-//            for(i in 0 until title.size){
-//                println("${title[i]}: ${preline[i]}\n")
-//            }
-//
-//        }
+    private fun updateList():ArrayList<Series> {
+        val retVal = ArrayList<Series>()
+        val htmlDoc = Jsoup.connect("https://myanimelist.net/anime/season").get()
+        val titles = htmlDoc.getElementsByClass("link-title")
+        val descriptions = htmlDoc.getElementsByClass("preline")
+        for (i in 0 until titles.size) {
+            retVal.add(
+                Series(
+                    titles[i].text(),
+                    descriptions[i].text(),
+                    arrayListOf("google.com")
+                )
+            )
+        }
+        return retVal
     }
 
     private fun getMagnetLinks(title: String){
         val retVal = ArrayList<URI>()
-        val queryTitle = title.replace(" ", "+") + "+horriblesubs"
+        val queryTitle = title.replace(" ", "+") + "+eng"
         val doc: Document = Jsoup.connect("https://nyaa.si/?f=0&c=0_0&q=$queryTitle").get()
     }
 
