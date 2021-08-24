@@ -19,7 +19,6 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.json:json:20210307")
     implementation("org.jsoup:jsoup:1.14.1")
-    implementation("com.github.beothorn:URISchemeHandler:2.0.0")
 }
 
 tasks.withType<KotlinCompile>() {
