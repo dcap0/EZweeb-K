@@ -2,8 +2,7 @@ package model
 
 data class Series(
     val title: String,
-    val description: String,
-    val magnetLinks: ArrayList<String>
+    val description: String
 )
 
 //fun Series.toJSONObject(){
