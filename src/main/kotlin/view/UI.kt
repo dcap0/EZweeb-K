@@ -2,29 +2,33 @@ package view
 
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.Window
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import controller.Logic
 import model.Series
+import java.net.URI
 
 fun root(logic: Logic) = Window(
     title = "EZWEEB-K",
     resizable = false,
-    size = IntSize(800,600),
+    size = IntSize(800,600)
 ) {
     val stateVertical = rememberScrollState(0)
     Column (
+        modifier = Modifier.background(Color.LightGray),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
@@ -35,7 +39,7 @@ fun root(logic: Logic) = Window(
         ) {
             Column {
                 logic.series.forEach {
-                    AnimeCard(it)
+                    AnimeCard(it,logic)
                 }
             }
         }
@@ -55,12 +59,14 @@ fun root(logic: Logic) = Window(
 //}
 
 @Composable
-fun AnimeCard(series: Series){
+fun AnimeCard(series: Series,logic: Logic){
     Card {
+        var links by remember { mutableStateOf(HashMap<String, URI>())}
+
         Row (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp).background(Color.LightGray)
         ) {
             Column(
                 Modifier.padding(4.dp).border(1.dp, Color.Cyan)
@@ -73,35 +79,59 @@ fun AnimeCard(series: Series){
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.border(1.dp, Color.Cyan)
+                modifier = Modifier.border(1.dp, Color.Cyan).background(Color.LightGray)
             ) {
                 Card{Text(series.title)}
                 Card(Modifier.border(1.dp,Color.Cyan)){Text(series.description)}
-                Card{Text("Anime Magnet Link")}
+                if(links.isEmpty()) {
+                    Button(
+                        onClick = {
+                            links = logic.getDownloadLinks(series.title)
+                        }
+                    ) {
+                        Text("Get Download Links")
+                    }
+                } else {
+                    Button(
+                        onClick = {
+                            links = logic.getDownloadLinks(series.title)
+                        }
+                    ) {
+                        Text("Get Download Links")
+                    }
+                    Window(size = IntSize(650,400),) { LinkListColumn(links,logic,series.title) }
+                }
             }
         }
     }
 }
 
-//
+//ha
 @Composable
-fun MagnetDropdown(mLinks: ArrayList<String>){
-    var expanded by remember {mutableStateOf(false)}
-    var selectedIndex by remember { mutableStateOf(0) }
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = {expanded = false},
-        modifier = Modifier.fillMaxWidth()
-    ){
-        mLinks.forEachIndexed { index, value ->
-            DropdownMenuItem(
-                onClick = {
-                    selectedIndex = index
-                    expanded = false
-                },
-                content = {Text(mLinks[index])}
-            )
+fun LinkListColumn(links:HashMap<String,URI>, logic: Logic, showName: String){
+    val labels = links.keys.toList()
+    Card{
+        LazyColumn() {
+            itemsIndexed(items = labels){_, label ->
+                DownloadCard(label,links[label]!!,logic,showName)
+            }
         }
+    }
+}
+
+@Composable
+fun DownloadCard(label: String,uri: URI,logic: Logic,showName: String){
+    Card(
+        modifier = Modifier.clickable { logic.downloadShow(uri,showName,label) }
+            .fillMaxWidth()
+            .border(2.dp,Color.Cyan)
+            .padding(bottom=4.dp)
+    ){
+        Text(
+            text = label,
+            modifier = Modifier.background(Color.LightGray),
+            fontFamily = FontFamily.Monospace,
+            fontSize = 20.sp
+        )
     }
 }
